@@ -10,6 +10,7 @@ from .parser_utils import get_links, delete_scam_parser, start_parser
 from celery import shared_task
 
 
+@shared_task
 def update_or_create_from_api(api_data: dict):
     api_data["name"] = api_data["name"].lower().replace(" ", "-")
     collection, created = Collection.objects.update_or_create(
