@@ -1,12 +1,9 @@
-import os
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.views import View
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
@@ -78,6 +75,7 @@ class NFTFilter(FilterSet):
 
 
 class NFTList(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Nft.objects.all()
     pagination_class = LimitOffsetPagination
     serializer_class = NFTSerializer
@@ -137,5 +135,6 @@ class NFTList(generics.ListAPIView):
 
 
 class NftTypeListAPIView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = NftType.objects.all()
     serializer_class = NftTypeSerializer
