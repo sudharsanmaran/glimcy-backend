@@ -1,11 +1,12 @@
+from datetime import datetime, timedelta
 from typing import List
 import requests
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import Collection
-from .parser_utils import get_links
+from .models import Collection, Nft
+from .parser_utils import get_links, delete_scam_parser, start_parser
 from celery import shared_task
 
 
@@ -16,6 +17,7 @@ def update_or_create_from_api(api_data: dict):
         defaults={**api_data, "timestamp": timezone.now()},
     )
     return collection, created
+
 
 def update_existing_nft(*args, **kwargs):
     checking_list = []
@@ -45,6 +47,7 @@ def update_existing_nft(*args, **kwargs):
     start_parser(checking_list)
 
     return
+
 
 @shared_task
 def get_nft_collections_from_block_daemon(
@@ -90,28 +93,24 @@ def start_parsing_collection_file(*args, **kwargs):
 
 
 @shared_task
-def start_parsing_collection_table(request):
+def start_parsing_collection_table():
     collections = Collection.objects.all()
     paginator = Paginator(collections, 100)
-
-    if 'direction' in request.GET:
-        direction = True
-    else:
-        direction = False
 
     for page_num in range(1, paginator.num_pages + 1):
         page = paginator.get_page(page_num)
         collections_list = [col.name for col in page]
 
-        x = -1 if direction else 0
+        x = -1
         while abs(x) < len(collections_list):
             try:
-                get_links(collections_list, x, direction=True)
-            except:
-                pass
-            x -= 1 if direction else 1
+                get_links(collections_list, x)
+            except Exception as e:
+                print(e)
+            x -= 1
 
     return JsonResponse({'message': 'Parsing started'})
+
 
 @shared_task
 def delete_scam(*args, **kwargs):
@@ -120,12 +119,14 @@ def delete_scam(*args, **kwargs):
 
     delete_scam_parser(list_with_nft)
 
+
 @shared_task
 def update_old(*args, **kwargs):
     nft_objs = Nft.objects.filter(update_time__lt=datetime.now() - timedelta(days=1))
     objs_list = [link.get_opensea_link() for link in nft_objs]
     print(objs_list)
     start_parser(objs_list)
+
 
 @shared_task
 def update_auto(*args, **kwargs):
@@ -140,5 +141,3 @@ def update_auto(*args, **kwargs):
     update_existing_nft.apply_async(
         kwargs={'position': third_part * 2}
     )
-
-
