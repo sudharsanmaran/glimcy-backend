@@ -17,6 +17,34 @@ def update_or_create_from_api(api_data: dict):
     )
     return collection, created
 
+def update_existing_nft(*args, **kwargs):
+    checking_list = []
+
+    print('ТАСКА АПДЕЙТ НАЧИНАЕТСЯ', f'ВОТ КВАРГИ {kwargs}')
+
+    nft_objects = Nft.objects.all().order_by('id')
+    if 'closing_position' in kwargs.keys():
+
+        print(f'БЫЛО ОБНАРУЖЕНО КЛОСИНГ ПОЗИШН ОТ {kwargs.get("position")} ДО {kwargs.get("closing_position")}')
+
+        for nft in nft_objects[int(kwargs.get('position')):int(kwargs.get('closing_position'))]:
+            checking_list.append(nft.get_opensea_link())
+
+    elif 'position' in kwargs.keys() and len(kwargs.keys()) == 1:
+
+        print(f'ОБНАРУЖЕН ОБЫЧНЫЙ ПОЗИШН')
+
+        for nft in nft_objects[int(kwargs.get('position')):]:
+            checking_list.append(nft.get_opensea_link())
+
+    else:
+        print('ПОЗИШНОВ НЕТ, ПАРШУ ВСЕ ПОДРЯД')
+        for nft in nft_objects:
+            checking_list.append(nft.get_opensea_link())
+
+    start_parser(checking_list)
+
+    return
 
 @shared_task
 def get_nft_collections_from_block_daemon(
@@ -84,3 +112,33 @@ def start_parsing_collection_table(request):
             x -= 1 if direction else 1
 
     return JsonResponse({'message': 'Parsing started'})
+
+@shared_task
+def delete_scam(*args, **kwargs):
+    nfts = Nft.objects.filter(name__contains='warning')
+    list_with_nft = [link.get_opensea_link() for link in nfts]
+
+    delete_scam_parser(list_with_nft)
+
+@shared_task
+def update_old(*args, **kwargs):
+    nft_objs = Nft.objects.filter(update_time__lt=datetime.now() - timedelta(days=1))
+    objs_list = [link.get_opensea_link() for link in nft_objs]
+    print(objs_list)
+    start_parser(objs_list)
+
+@shared_task
+def update_auto(*args, **kwargs):
+    third_part = round(Nft.objects.all().count() / 3)
+
+    update_existing_nft.apply_async(
+        kwargs={'position': 0, "closing_position": third_part}
+    )
+    update_existing_nft.apply_async(
+        kwargs={'position': third_part, "closing_position": third_part * 2}
+    )
+    update_existing_nft.apply_async(
+        kwargs={'position': third_part * 2}
+    )
+
+
