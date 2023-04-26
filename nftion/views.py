@@ -8,52 +8,11 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
-from .tasks import get_nft_collections_from_block_daemon
+from .tasks import get_nft_collections_from_block_daemon, start_parsing_collection_table, start_parsing_collection_file
 from .models import Collection, Nft, NftType
 from .serializers import NFTSerializer, NftTypeSerializer, NFTListFilterSerializer
 from .parser_utils import get_links
 from django_filters import FilterSet, CharFilter
-
-
-def start_parsing_collection_table(request):
-    collections = Collection.objects.all()
-    paginator = Paginator(collections, 100)
-
-    if 'direction' in request.GET:
-        direction = True
-    else:
-        direction = False
-
-    for page_num in range(1, paginator.num_pages + 1):
-        page = paginator.get_page(page_num)
-        collections_list = [col.name for col in page]
-
-        x = -1 if direction else 0
-        while abs(x) < len(collections_list):
-            try:
-                get_links(collections_list, x, direction=True)
-            except:
-                pass
-            x -= 1 if direction else 1
-
-    return JsonResponse({'message': 'Parsing started'})
-
-
-def start_parsing_collection_file(*args, **kwargs):
-    with open(settings.COLLECTION_FILE_PATH, 'r') as file:
-        collections_list = file.read().split('\n')
-
-    if 'direction' in kwargs.keys():
-        print('DIRECTION IN KWARGS')
-        x = -1
-        while abs(x) < len(collections_list) / 2:
-            try:
-                get_links(collections_list, x, direction=True)
-            except:
-                pass
-            x -= 1
-    else:
-        get_links(collections=collections_list, col_id=0)
 
 
 class NFTCollectionsView(View):
@@ -101,7 +60,7 @@ class NFTList(generics.ListAPIView):
             queryset = queryset.filter(nft_type_id__in=type_ids_list)
 
         if offer == 'true':
-             queryset = queryset.filter(offer='Offer Available')
+            queryset = queryset.filter(offer='Offer Available')
         elif offer == 'false':
             queryset = queryset.exclude(offer='Offer Available')
 

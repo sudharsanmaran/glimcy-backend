@@ -84,6 +84,8 @@ class User(AbstractUser):
         choices=[(tag.name, tag.value) for tag in SubscriptionSourceChoices],
         default=SubscriptionSourceChoices.STRIPE.value,
     )
+    subscription_start = models.DateTimeField(blank=True, null=True)
+    subscription_end = models.DateTimeField(blank=True, null=True)
     free_trial = models.BooleanField(default=True)
 
     USERNAME_FIELD = "email"

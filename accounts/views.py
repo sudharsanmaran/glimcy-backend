@@ -1,5 +1,4 @@
 from django.dispatch import Signal
-import base64
 import smtplib
 
 import requests
@@ -8,14 +7,10 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 import random
-
-from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
-from django.http import HttpResponse, HttpResponseBadRequest
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.generics import GenericAPIView
+from datetime import datetime
+from django.utils.timezone import make_aware, utc
+from drf_spectacular.utils import extend_schema
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.utils import json
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.cache import cache
 
@@ -24,11 +19,11 @@ from .constants import SourceChoices, INVALID_PASSWORD_ERROR, PASSWORD_UPDATE_SU
     PASSWORD_RESET_OTP_MAIL_MESSAGE, PASSWORD_RESET_OTP_MAIL_BODY, PASSWORD_RESET_OTP_MAIL_ERROR_MESSAGE, \
     STRIPE_TRAIL_PERIOD, STRIPE_CANCEL_SUBSCRIPTION_MESSAGE, STRIPE_NO_SUBSCRIPTION_MESSAGE, \
     STRIPE_SUBSCRIPTION_SUCCESS_MESSAGE, STRIPE_SUBSCRIPTION_FAILURE_MESSAGE, STRIPE_SUBSCRIPTION_FAILURE_TITLE, \
-    STRIPE_SUBSCRIPTION_SUCCESS_TITLE, NOTIFICATION_ALL_READ, NOTIFICATION_NOT_EXIST, NOTIFICATION_SINGLE_READ, \
+    STRIPE_SUBSCRIPTION_SUCCESS_TITLE, NOTIFICATION_NOT_EXIST, NOTIFICATION_SINGLE_READ, \
     NO_UNREAD_NOTIFICATIONS, ALL_NOTIFICATIONS_MARKED_READ, SubscriptionSourceChoices
 from .errors import InvalidAccessTokenOrInvalidIDToken, InvalidAccessToken, InvalidIDToken, DuplicateEmail
 from .models import CryptoExchangeApiKey, Notification
-from rest_framework import generics, serializers, request
+from rest_framework import generics, serializers
 from rest_framework import permissions
 from rest_framework.response import Response
 
@@ -440,12 +435,20 @@ class StripePaymentStatusView(APIView):
         session_id = request.data.get('session_id')
         product_name = request.data.get('product_name')
         checkout_session = stripe.checkout.Session.retrieve(session_id)
+        user = request.user
         if checkout_session.payment_status == 'paid':
             subscription_notification.send(sender=self.__class__, title=STRIPE_SUBSCRIPTION_SUCCESS_TITLE,
                                            message=STRIPE_SUBSCRIPTION_SUCCESS_MESSAGE.format(product_name),
                                            user=request.user)
-            user = request.user
+
+            customer_id = user.stripe_customer_id
+            subscriptions = stripe.Subscription.list(customer=customer_id)
+            current_subscription = next(subscription for subscription in subscriptions if
+                                        subscription.status == 'active' or subscription.status == 'trialing')
+
             user.subscription_source = SubscriptionSourceChoices.STRIPE.value
+            user.subscription_start = make_aware(datetime.utcfromtimestamp(current_subscription.current_period_start))
+            user.subscription_end = make_aware(datetime.utcfromtimestamp(current_subscription.current_period_end))
             user.free_trial = False
             user.save()
             return Response({'message': STRIPE_SUBSCRIPTION_SUCCESS_MESSAGE.format(product_name)},
@@ -544,6 +547,9 @@ class PaypalPaymentStatusView(APIView):
                 user.paypal_payer_id = response_data.get('subscriber').get('payer_id')
                 user.paypal_subscription_id = subscription_id
                 user.subscription_source = SubscriptionSourceChoices.PAYPAL.value
+                user.subscription_start = datetime.strptime(response_data.get('start_time'), '%Y-%m-%dT%H:%M:%S%z')
+                user.subscription_end = datetime.strptime(response_data.get('billing_info').get(
+                    'next_billing_time'), '%Y-%m-%dT%H:%M:%S%z')
                 user.free_trial = False
                 user.save()
             subscription_notification.send(sender=self.__class__, title=STRIPE_SUBSCRIPTION_SUCCESS_TITLE,
