@@ -22,7 +22,7 @@ def populate_intervals_and_periodic_tasks():
         {
             'name': 'get_collection_name_from_blockdaemon',
             'task': 'nftion.tasks.get_nft_collections_from_block_daemon',
-            'interval': IntervalSchedule.objects.get(every=5, period=IntervalSchedule.MINUTES),
+            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.DAYS),
         },
         {
             'name': 'start_parsing_collection_file',
@@ -33,12 +33,12 @@ def populate_intervals_and_periodic_tasks():
         {
             'name': 'start_parsing_collection_table',
             'task': 'nftion.tasks.start_parsing_collection_table',
-            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.MINUTES),
+            'interval': IntervalSchedule.objects.get(every=5, period=IntervalSchedule.HOURS),
         },
         {
             'name': 'update_existing_nft',
             'task': 'nftion.tasks.update_existing_nft',
-            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.MINUTES),
+            'interval': IntervalSchedule.objects.get(every=5, period=IntervalSchedule.HOURS),
         },
         {
             'name': 'update_auto',
@@ -48,12 +48,12 @@ def populate_intervals_and_periodic_tasks():
         {
             'name': 'update_old',
             'task': 'nftion.tasks.update_old',
-            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.MINUTES),
+            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.DAYS),
         },
         {
             'name': 'delete_scam',
             'task': 'nftion.tasks.delete_scam',
-            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.MINUTES),
+            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.DAYS),
         },
     ]
 
