@@ -38,7 +38,7 @@ def populate_intervals_and_periodic_tasks():
         {
             'name': 'update_existing_nft',
             'task': 'nftion.tasks.update_existing_nft',
-            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.HOURS),
+            'interval': IntervalSchedule.objects.get(every=1, period=IntervalSchedule.DAYS),
         },
         {
             'name': 'update_auto',
