@@ -118,7 +118,16 @@ WSGI_APPLICATION = "glimcy.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -302,13 +311,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 if DEBUG:
-    # db
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
 
     # stripe
     STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
@@ -330,10 +332,6 @@ if DEBUG:
     CELERY_RESULT_BACKEND = env('REDIS_URL')
 
 else:
-    # DB
-    prod_db = dj_database_url.config(conn_max_age=500)
-    DATABASES['default'].update(prod_db)
-
     # stripe
     STRIPE_SECRET_KEY = env('LIVE_STRIPE_SECRET_KEY')
     STRIPE_API_VERSION = env('STRIPE_API_VERSION')
