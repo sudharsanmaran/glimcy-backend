@@ -1,0 +1,94 @@
+{
+  "SUBSCRIPTION_PLANS": [
+    {
+      "stripe_price_id": "price_1MsoTmDtf3mDqzsdbs6dp6yo",
+      "paypal_subscription_plan_id": "P-67691659R1925791VMQ3L75A",
+      "plan_name": "Premium Plan",
+      "description": "Sint sint voluptate aliqua aliqua occaecat consectetur duis veniam ipsum cillum do nostrud.",
+      "Benefits": [
+        "Trading up to $100k per month",
+        "Send and receive over 84 tokens",
+        "Real time crypto trading",
+        "iOS and Android App"
+      ],
+      "price": 19.95,
+      "currency": "USD",
+      "type": "month"
+    },
+    {
+      "stripe_price_id": "price_1MsoUcDtf3mDqzsd6Y990Wkp",
+      "paypal_subscription_plan_id": "P-19T44942FV6722215MQ3L7DA",
+      "plan_name": "Medium Plan",
+      "description": "Sint sint voluptate aliqua aliqua occaecat consectetur duis veniam ipsum cillum do nostrud.",
+      "Benefits": [
+        "Trading up to $100k per month",
+        "Send and receive over 84 tokens",
+        "Real time crypto trading",
+        "iOS and Android App"
+      ],
+      "price": 14.95,
+      "currency": "USD",
+      "type": "month"
+    },
+    {
+      "stripe_price_id": "price_1MsoVBDtf3mDqzsdSxG2M7r8",
+      "paypal_subscription_plan_id": "P-9AF49538W0198312VMQ3MBOI",
+      "plan_name": "Basic Plan",
+      "description": "Sint sint voluptate aliqua aliqua occaecat consectetur duis veniam ipsum cillum do nostrud.",
+      "Benefits": [
+        "Trading up to $100k per month",
+        "Send and receive over 84 tokens",
+        "Real time crypto trading",
+        "iOS and Android App"
+      ],
+      "price": 9.95,
+      "currency": "USD",
+      "type": "month"
+    },
+    {
+      "stripe_price_id": "price_1Mt4EfDtf3mDqzsdoWFybsot",
+      "paypal_subscription_plan_id": "P-5AR288649X1274218MQ3MAYI",
+      "plan_name": "Basic Plan",
+      "description": "Sint sint voluptate aliqua aliqua occaecat consectetur duis veniam ipsum cillum do nostrud.",
+      "Benefits": [
+        "Trading up to $100k per month",
+        "Send and receive over 84 tokens",
+        "Real time crypto trading",
+        "iOS and Android App"
+      ],
+      "price": 89.95,
+      "currency": "USD",
+      "type": "annual"
+    },
+    {
+      "stripe_price_id": "price_1Mt4GRDtf3mDqzsdOyHF7QsD",
+      "paypal_subscription_plan_id": "P-6D423756GF288161SMQ3L5ZA",
+      "plan_name": "Medium",
+      "description": "Sint sint voluptate aliqua aliqua occaecat consectetur duis veniam ipsum cillum do nostrud.",
+      "Benefits": [
+        "Trading up to $100k per month",
+        "Send and receive over 84 tokens",
+        "Real time crypto trading",
+        "iOS and Android App"
+      ],
+      "price": 134.95,
+      "currency": "USD",
+      "type": "annual"
+    },
+    {
+      "stripe_price_id": "price_1Mt4HHDtf3mDqzsdbPTuuYKY",
+      "paypal_subscription_plan_id": "P-5MS3303887135773WMQ3LZGA",
+      "plan_name": "Premium",
+      "description": "Sint sint voluptate aliqua aliqua occaecat consectetur duis veniam ipsum cillum do nostrud.",
+      "Benefits": [
+        "Trading up to $100k per month",
+        "Send and receive over 84 tokens",
+        "Real time crypto trading",
+        "iOS and Android App"
+      ],
+      "price": 179.95,
+      "currency": "USD",
+      "type": "annual"
+    }
+  ]
+}
