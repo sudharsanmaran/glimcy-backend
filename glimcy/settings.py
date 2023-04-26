@@ -14,6 +14,7 @@ import json
 from django.core.management.utils import get_random_secret_key
 from cryptography.fernet import Fernet
 import environ
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 FERNET_SECRET_KEY = Fernet.generate_key()
 # APPEND_SLASH = False
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(env('DEBUG'))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -117,12 +118,7 @@ WSGI_APPLICATION = "glimcy.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -306,6 +302,13 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 if DEBUG:
+    # db
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
     # stripe
     STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
@@ -327,6 +330,10 @@ if DEBUG:
     CELERY_RESULT_BACKEND = env('REDIS_URL')
 
 else:
+    # DB
+    prod_db = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'].update(prod_db)
+
     # stripe
     STRIPE_SECRET_KEY = env('LIVE_STRIPE_SECRET_KEY')
     STRIPE_API_VERSION = env('STRIPE_API_VERSION')
