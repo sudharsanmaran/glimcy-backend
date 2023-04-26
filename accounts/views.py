@@ -186,6 +186,7 @@ class ForgotPasswordAPI(generics.GenericAPIView):
                 smtplib.SMTPSenderRefused,
                 smtplib.SMTPRecipientsRefused,
                 smtplib.SMTPDataError,
+                smtplib.SMTPAuthenticationError
         ) as e:
             return Response({
                 "error": {
@@ -193,7 +194,8 @@ class ForgotPasswordAPI(generics.GenericAPIView):
                     "message": PASSWORD_RESET_OTP_MAIL_ERROR_MESSAGE,
                     "details": [SEND_EMAIL_EXCEPTION_ERROR.format(e)],
                 }
-            })
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response({"detail": PASSWORD_RESET_OTP_SENT_MESSAGE}, status=status.HTTP_200_OK)
 
 

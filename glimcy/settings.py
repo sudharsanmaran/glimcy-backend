@@ -257,7 +257,7 @@ MEDIA_ROOT = BASE_DIR / "uploads"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.zoho.com'
 # Push your email
 EMAIL_HOST_USER = env('EMAIL_SENDER')
 # Push your password
