@@ -51,3 +51,7 @@ NOTIFICATION_NOT_EXIST = 'Notification with ID {} does not exist.'
 NOTIFICATION_SINGLE_READ = 'Notification with id={} updated successfully.'
 NO_UNREAD_NOTIFICATIONS = 'There are no unread notifications to mark as read.'
 ALL_NOTIFICATIONS_MARKED_READ = 'All unread notifications have been marked as read.'
+
+# nftion
+NFT_LIMIT_MESSAGE = "Join our community of NFT enthusiasts by subscribing today. Gain access to our full NFT list and explore a world of unique digital assets that you won't find anywhere else."
+NFT_ERROR_MESSAGE = 'User does not have an active subscription.'

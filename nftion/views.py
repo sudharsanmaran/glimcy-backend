@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
@@ -13,6 +13,10 @@ from .models import Collection, Nft, NftType
 from .serializers import NFTSerializer, NftTypeSerializer, NFTListFilterSerializer
 from .parser_utils import get_links
 from django_filters import FilterSet, CharFilter
+
+from datetime import datetime, timedelta
+import pytz
+from accounts import constants
 
 
 class NFTCollectionsView(View):
@@ -82,6 +86,10 @@ class NFTList(generics.ListAPIView):
         return queryset
 
     def list(self, request, *args, **kwargs):
+        user = self.request.user
+        if not user.subscription_end or user.subscription_end < datetime.utcnow().replace(tzinfo=pytz.utc):
+            return Response({'error': constants.NFT_ERROR_MESSAGE}, status=status.HTTP_400_BAD_REQUEST)
+
         queryset = self.filter_queryset(self.get_queryset())
 
         pagination = self.paginate_queryset(queryset)
