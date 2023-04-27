@@ -27,10 +27,12 @@ django-celery-beat==2.5.0
 django-cors-headers==3.14.0
 django-environ==0.10.0
 django-filter==23.1
+django-heroku==0.3.1
 django-timezone-field==5.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-spectacular==0.26.2
+gunicorn==20.1.0
 idna==3.4
 inflection==0.5.1
 jsonschema==4.17.3
@@ -41,6 +43,7 @@ oauthlib==3.2.2
 pathspec==0.11.1
 platformdirs==3.3.0
 prompt-toolkit==3.0.38
+psycopg2==2.9.6
 psycopg2-binary==2.9.6
 pycparser==2.21
 PyJWT==2.6.0
