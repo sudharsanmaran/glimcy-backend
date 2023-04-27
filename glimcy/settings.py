@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import timedelta
 import json
 
+import django_heroku
 from django.core.management.utils import get_random_secret_key
 from cryptography.fernet import Fernet
 import environ
@@ -162,6 +163,8 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+django_heroku.settings(locals())
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
