@@ -229,7 +229,6 @@ class NotificationAllReadUpdateSerializer(serializers.Serializer):
     message = serializers.CharField()
 
 
-
 class StripePaymentStatusSerializer(serializers.Serializer):
     session_id = serializers.CharField(max_length=255)
     product_name = serializers.CharField(required=True)
@@ -242,6 +241,7 @@ class StripePaymentStatusSerializer(serializers.Serializer):
 class NotificationListViewSerializer(serializers.Serializer):
     filter_value = serializers.ChoiceField(choices=["read", "unread"])
 
+
 class PaypalPaymentStatusSerializer(serializers.Serializer):
     subscription_id = serializers.CharField(max_length=255)
     product_name = serializers.CharField(required=True)
@@ -253,7 +253,8 @@ class SubscriptionSerializer(serializers.Serializer):
     current_subscription_start = serializers.DateTimeField()
     current_subscription_end = serializers.DateTimeField()
     plan_id = serializers.CharField(allow_null=True)
-    subscription_source = serializers.ChoiceField(choices=[(choice.value, choice.name) for choice in SubscriptionSourceChoices])
+    subscription_source = serializers.ChoiceField(
+        choices=[(choice.value, choice.name) for choice in SubscriptionSourceChoices])
 
 
 class SubscriptionPlanSerializer(serializers.Serializer):

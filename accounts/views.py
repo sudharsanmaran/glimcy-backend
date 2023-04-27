@@ -11,6 +11,7 @@ from datetime import datetime
 from django.utils.timezone import make_aware, utc
 from drf_spectacular.utils import extend_schema
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.cache import cache
 
@@ -70,14 +71,15 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     """Get and update user profile"""
 
     serializer_class = UserProfileSerializer
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    throttle_classes = [UserRateThrottle]
 
     def get_object(self):
         return self.request.user
 
 
 class ApiKeyList(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ApiKeySerializer
 
@@ -87,11 +89,13 @@ class ApiKeyList(generics.ListAPIView):
 
 
 class UserInfoList(generics.ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
 
 
 class UserInfoDetail(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
 
@@ -159,6 +163,7 @@ class ForgotPasswordAPI(generics.GenericAPIView):
     """Get user email and return a token for user"""
     serializer_class = ForgotPasswordSerializer
     throttle_classes = [UserRateThrottle]
+    authentication_classes = [JWTAuthentication]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -198,6 +203,7 @@ class ResetPasswordAPI(generics.GenericAPIView):
     """Get new password from user and return a response message"""
     serializer_class = ResetPasswordSerializer
     throttle_classes = [UserRateThrottle]
+    authentication_classes = [JWTAuthentication]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -208,6 +214,7 @@ class ResetPasswordAPI(generics.GenericAPIView):
 
 class ChangePasswordAPI(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [UserRateThrottle]
 
@@ -281,6 +288,7 @@ stripe.api_version = settings.STRIPE_API_VERSION
 
 
 class SubscriptionPlansEnvView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SubscriptionPlanSerializer
 
@@ -291,6 +299,7 @@ class SubscriptionPlansEnvView(APIView):
 
 class CheckoutSessionView(APIView):
     serializer_class = CheckoutSessionSerializer
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -343,6 +352,7 @@ class CheckoutSessionView(APIView):
 
 class CancelSubscriptionView(APIView):
     serializer_class = CancelSubscriptionSerializer
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -380,6 +390,7 @@ class CancelSubscriptionView(APIView):
 
 
 class GetSubscriptionView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SubscriptionSerializer
 
@@ -427,6 +438,7 @@ class GetSubscriptionView(APIView):
 
 
 class StripePaymentStatusView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = StripePaymentStatusSerializer
 
@@ -470,6 +482,7 @@ class DescendingOffsetPagination(LimitOffsetPagination):
 
 
 class NotificationListView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(
@@ -492,6 +505,7 @@ class NotificationListView(APIView):
 
 
 class NotificationReadUpdateView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = NotificationReadSerializer
 
@@ -515,6 +529,7 @@ class NotificationReadUpdateView(APIView):
 
 
 class NotificationAllReadUpdateView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = NotificationAllReadUpdateSerializer
 
@@ -534,6 +549,7 @@ class NotificationAllReadUpdateView(APIView):
 
 class PaypalPaymentStatusView(APIView):
     serializer_class = PaypalPaymentStatusSerializer
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
