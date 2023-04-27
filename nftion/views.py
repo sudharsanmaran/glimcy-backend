@@ -36,11 +36,37 @@ class NFTFilter(FilterSet):
             'deals_number': ['gte', 'lte'],
         }
 
+class NFTListLimitOffsetPagination(LimitOffsetPagination):
+    
+    def paginate_queryset(self, queryset, request, view=None):
+
+        self.limit = self.get_limit(request)
+        self.count = self.get_count(queryset)
+        self.offset = self.get_offset(request)
+        self.request = request
+        
+        if not request.user.subscription_end or request.user.subscription_end < datetime.utcnow().replace(tzinfo=pytz.utc):
+            self.limit = 5
+            self.offset = 0
+
+        if self.limit is None:
+            return None
+
+
+        if self.count > self.limit:
+            self.display_page_controls = True
+
+        if self.count == 0 or self.offset > self.count:
+            return []
+
+            
+        return list(queryset[self.offset:self.offset + self.limit])
+
 
 class NFTList(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Nft.objects.all()
-    pagination_class = LimitOffsetPagination
+    pagination_class = NFTListLimitOffsetPagination
     serializer_class = NFTSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = NFTFilter
@@ -51,8 +77,16 @@ class NFTList(generics.ListAPIView):
         filter_serializer.is_valid(raise_exception=True)
         filter_data = filter_serializer.validated_data
 
+        user = self.request.user
         offer = self.request.query_params.get('offer', None)
-        ordering = self.request.query_params.get('ordering', '-update_time')
+
+        if not user.subscription_end or user.subscription_end < datetime.utcnow().replace(tzinfo=pytz.utc):
+            ordering = self.request.query_params.get('ordering', '-id')
+            FINAL_MESSAGE = constants.NFT_LIMIT_MESSAGE
+        else:
+            ordering = self.request.query_params.get('ordering', '-update_time')
+            FINAL_MESSAGE = constants.NFT_MESSAGE
+
         price_max = self.request.query_params.get('price__lte', None)
         price_min = self.request.query_params.get('price__gte', None)
         deals_number_max = self.request.query_params.get('deals_number__lte', None)
@@ -83,22 +117,24 @@ class NFTList(generics.ListAPIView):
             queryset = queryset.filter(deals_number__lte=deals_number_max)
 
         queryset = queryset.order_by(ordering)
-        return queryset
+        return queryset, FINAL_MESSAGE
 
     def list(self, request, *args, **kwargs):
-        user = self.request.user
-        if not user.subscription_end or user.subscription_end < datetime.utcnow().replace(tzinfo=pytz.utc):
-            return Response({'error': constants.NFT_ERROR_MESSAGE}, status=status.HTTP_400_BAD_REQUEST)
 
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset, FINAL_MESSAGE = self.filter_queryset(self.get_queryset())
 
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
             serializer = self.get_serializer(pagination, many=True)
-            return self.get_paginated_response(serializer.data)
+
+            context_data = {
+                'message': FINAL_MESSAGE,
+                'data': serializer.data,
+            }
+            return self.get_paginated_response(context_data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response({'message': FINAL_MESSAGE, 'data':serializer})
 
 
 class NftTypeListAPIView(generics.ListAPIView):
