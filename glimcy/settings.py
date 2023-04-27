@@ -34,7 +34,7 @@ FERNET_SECRET_KEY = Fernet.generate_key()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(env('DEBUG'))
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["glimcy-backend.herokuapp.com"]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://*.localhost:*",
