@@ -12,7 +12,7 @@ from django.conf import settings
 import django
 
 from datetime import timedelta
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, utc
 
 django.setup()
 from .models import Nft, NftType
@@ -57,7 +57,7 @@ def start_parser(urls: list):
                     'total_profit': got['total_profit'],
                     'monthly_roi': got['monthly_roi'],
                     'deals_number': got['deals_number'],
-                    'last_sale_date': got['last_sale_date'],
+                    'last_sale_date': make_aware(got['last_sale_date'], timezone=utc),
                     'max_profit_per_sale': got['max_profit_per_sale'],
                     'min_profit_sale': got['min_profit_per_sale'],
                     'average_hold_duration': to_timedelta(got['average_hold_duration']),
