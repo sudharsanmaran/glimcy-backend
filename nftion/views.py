@@ -82,10 +82,10 @@ class NFTList(generics.ListAPIView):
 
         if not user.subscription_end or user.subscription_end < datetime.utcnow().replace(tzinfo=pytz.utc):
             ordering = filter_data.get('ordering', '-id')
-            FINAL_MESSAGE = constants.NFT_LIMIT_MESSAGE
+            final_msg = constants.NFT_LIMIT_MESSAGE
         else:
             ordering = filter_data.get('ordering', '-update_time')
-            FINAL_MESSAGE = constants.NFT_MESSAGE
+            final_msg = constants.NFT_MESSAGE
 
         price_max = filter_data.get('price__lte', None)
         price_min = filter_data.get('price__gte', None)
@@ -117,24 +117,24 @@ class NFTList(generics.ListAPIView):
             queryset = queryset.filter(deals_number__lte=deals_number_max)
 
         queryset = queryset.order_by(ordering)
-        return queryset, FINAL_MESSAGE
+        return queryset, final_msg
 
     def list(self, request, *args, **kwargs):
 
-        queryset, FINAL_MESSAGE = self.filter_queryset(self.get_queryset())
+        queryset, final_msg = self.filter_queryset(self.get_queryset())
 
         pagination = self.paginate_queryset(queryset)
         if pagination is not None:
             serializer = self.get_serializer(pagination, many=True)
 
             context_data = {
-                'message': FINAL_MESSAGE,
+                'message': final_msg,
                 'data': serializer.data,
             }
             return self.get_paginated_response(context_data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response({'message': FINAL_MESSAGE, 'data':serializer})
+        return Response({'message': final_msg, 'data': serializer})
 
 
 class NftTypeListAPIView(generics.ListAPIView):
