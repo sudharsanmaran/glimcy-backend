@@ -24,6 +24,8 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+
+
 admin.site.site_header = "Project Header"
 admin.site.site_title = "Project Title"
 admin.site.index_title = "Welcome Message"
