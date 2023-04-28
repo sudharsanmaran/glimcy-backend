@@ -37,14 +37,14 @@ class NFTFilter(FilterSet):
         }
 
 class NFTListLimitOffsetPagination(LimitOffsetPagination):
-    
+
     def paginate_queryset(self, queryset, request, view=None):
 
         self.limit = self.get_limit(request)
         self.count = self.get_count(queryset)
         self.offset = self.get_offset(request)
         self.request = request
-        
+
         if not request.user.subscription_end or request.user.subscription_end < datetime.utcnow().replace(tzinfo=pytz.utc):
             self.limit = 5
             self.offset = 0
@@ -59,7 +59,7 @@ class NFTListLimitOffsetPagination(LimitOffsetPagination):
         if self.count == 0 or self.offset > self.count:
             return []
 
-            
+
         return list(queryset[self.offset:self.offset + self.limit])
 
 
@@ -92,6 +92,12 @@ class NFTList(generics.ListAPIView):
         deals_number_max = self.request.query_params.get('deals_number__lte', None)
         deals_number_min = self.request.query_params.get('deals_number__gte', None)
         nft_type_ids = self.request.query_params.get('nft_type_ids')
+        ordering = filter_data.get('ordering', '-update_time')
+        price_max = filter_data.get('price__lte', None)
+        price_min = filter_data.get('price__gte', None)
+        deals_number_max = filter_data.get('deals_number__lte', None)
+        deals_number_min = filter_data.get('deals_number__gte', None)
+        nft_type_ids = filter_data.get('nft_type_ids')
 
         if nft_type_ids is not None and nft_type_ids != '':
             type_ids_list = [int(ids) for ids in nft_type_ids.split(',')]

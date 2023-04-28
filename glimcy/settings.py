@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import timedelta
 import json
 
+import django_heroku
 from django.core.management.utils import get_random_secret_key
 from cryptography.fernet import Fernet
 import environ
@@ -27,13 +28,13 @@ COLLECTION_FILE_PATH = BASE_DIR / 'nftion/collections.txt'
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 FERNET_SECRET_KEY = Fernet.generate_key()
 # APPEND_SLASH = False
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(env('DEBUG'))
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["glimcy-backend.herokuapp.com"]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://*.localhost:*",
@@ -163,6 +164,8 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+django_heroku.settings(locals())
+
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 50,
@@ -175,14 +178,11 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "100/hour", "user": "1000/hour"},
     "EXCEPTION_HANDLER": "glimcy.utils.api_exception_handler",
 }
 
 REST_AUTH = {
     'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'my-app-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
     'JWT_AUTH_HTTPONLY': False,
 }
 
@@ -211,8 +211,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=14),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=21),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,
