@@ -81,18 +81,12 @@ class NFTList(generics.ListAPIView):
         offer = self.request.query_params.get('offer', None)
 
         if not user.subscription_end or user.subscription_end < datetime.utcnow().replace(tzinfo=pytz.utc):
-            ordering = self.request.query_params.get('ordering', '-id')
+            ordering = filter_data.get('ordering', '-id')
             FINAL_MESSAGE = constants.NFT_LIMIT_MESSAGE
         else:
-            ordering = self.request.query_params.get('ordering', '-update_time')
+            ordering = filter_data.get('ordering', '-update_time')
             FINAL_MESSAGE = constants.NFT_MESSAGE
 
-        price_max = self.request.query_params.get('price__lte', None)
-        price_min = self.request.query_params.get('price__gte', None)
-        deals_number_max = self.request.query_params.get('deals_number__lte', None)
-        deals_number_min = self.request.query_params.get('deals_number__gte', None)
-        nft_type_ids = self.request.query_params.get('nft_type_ids')
-        ordering = filter_data.get('ordering', '-update_time')
         price_max = filter_data.get('price__lte', None)
         price_min = filter_data.get('price__gte', None)
         deals_number_max = filter_data.get('deals_number__lte', None)
