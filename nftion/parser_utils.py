@@ -1,3 +1,4 @@
+import datetime
 import gc
 import os
 
@@ -11,7 +12,7 @@ import cloudscraper
 from django.conf import settings
 import django
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.utils.timezone import make_aware, utc
 
 django.setup()
@@ -57,7 +58,8 @@ def start_parser(urls: list):
                     'total_profit': got['total_profit'],
                     'monthly_roi': got['monthly_roi'],
                     'deals_number': got['deals_number'],
-                    'last_sale_date': make_aware(got['last_sale_date'], timezone=utc),
+                    'last_sale_date': make_aware(datetime.strptime(got['last_sale_date'], '%Y-%m-%dT%H:%M:%S'),
+                                                 timezone=utc),
                     'max_profit_per_sale': got['max_profit_per_sale'],
                     'min_profit_sale': got['min_profit_per_sale'],
                     'average_hold_duration': to_timedelta(got['average_hold_duration']),
