@@ -54,4 +54,5 @@ ALL_NOTIFICATIONS_MARKED_READ = 'All unread notifications have been marked as re
 
 # nftion
 NFT_LIMIT_MESSAGE = "Join our community of NFT enthusiasts by subscribing today. Gain access to our full NFT list and explore a world of unique digital assets that you won't find anywhere else."
+NFT_MESSAGE = "Thank you for being a part of our NFT community! As a subscribed user, you already have access to our full NFT list."
 NFT_ERROR_MESSAGE = 'User does not have an active subscription.'
