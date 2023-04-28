@@ -28,7 +28,7 @@ COLLECTION_FILE_PATH = BASE_DIR / 'nftion/collections.txt'
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 FERNET_SECRET_KEY = Fernet.generate_key()
 # APPEND_SLASH = False
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -168,7 +168,7 @@ django_heroku.settings(locals())
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 92,
+    "PAGE_SIZE": 50,
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         "rest_framework_simplejwt.authentication.JWTAuthentication",

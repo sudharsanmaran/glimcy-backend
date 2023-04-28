@@ -52,12 +52,12 @@ class NFTList(generics.ListAPIView):
         filter_data = filter_serializer.validated_data
 
         offer = self.request.query_params.get('offer', None)
-        ordering = self.request.query_params.get('ordering', '-update_time')
-        price_max = self.request.query_params.get('price__lte', None)
-        price_min = self.request.query_params.get('price__gte', None)
-        deals_number_max = self.request.query_params.get('deals_number__lte', None)
-        deals_number_min = self.request.query_params.get('deals_number__gte', None)
-        nft_type_ids = self.request.query_params.get('nft_type_ids')
+        ordering = filter_data.get('ordering', '-update_time')
+        price_max = filter_data.get('price__lte', None)
+        price_min = filter_data.get('price__gte', None)
+        deals_number_max = filter_data.get('deals_number__lte', None)
+        deals_number_min = filter_data.get('deals_number__gte', None)
+        nft_type_ids = filter_data.get('nft_type_ids')
 
         if nft_type_ids is not None and nft_type_ids != '':
             type_ids_list = [int(ids) for ids in nft_type_ids.split(',')]
